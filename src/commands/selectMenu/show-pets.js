@@ -6,7 +6,7 @@ module.exports = {
     description: "select-menu",
     // devOnly: true,
     // testOnly: true,
-    deleted: false,
+    deleted: true,
 
     permissionsRequired: [PermissionFlagsBits.Administrator],
     botPermissions: [PermissionFlagsBits.Administrator],

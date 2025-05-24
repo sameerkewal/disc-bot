@@ -1,10 +1,10 @@
-const { getLocalGifs } = require('../../api/firebase/app/setGifCache');
+const { getLocalMedia } = require('../../api/firebase/app/setMediaCache');
 
 module.exports=async(client, message)=>{
 
     if(message.author.bot) return;
 
-    const gifCache =   getLocalGifs();
+    const gifCache =   getLocalMedia();
 
     const matchedGifObjects = gifCache.filter((gifObject) => gifObject.message.toUpperCase() === message.content.toUpperCase())
 
@@ -14,7 +14,7 @@ module.exports=async(client, message)=>{
         const randomGif = matchedGifObjects[randomIndex];
 
         // Send the media_url of the random matched gif
-        message.channel.send(randomGif.media_url);
+        message.channel.send(randomGif.mediaUrl);
     }
 
 

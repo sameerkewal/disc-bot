@@ -15,7 +15,6 @@ async function getAllDocs() {
     snapshot.forEach(doc => {
         docs.push(doc.data());
     });
-
     return docs;
 }
 

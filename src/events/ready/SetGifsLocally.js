@@ -1,4 +1,4 @@
-const { setLocalGifs } = require('../../api/firebase/app/setGifCache');
+const { setLocalGifs } = require('../../api/firebase/app/setMediaCache');
 
 // let gifCache = [];
 

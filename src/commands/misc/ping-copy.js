@@ -24,6 +24,7 @@ module.exports = {
 
     name: "pong",
     description: "ping!",
+    deleted: true,
     // devOnly: true,
     // testOnly: true
     // options:
