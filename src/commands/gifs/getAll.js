@@ -5,7 +5,7 @@ module.exports = {
 
     name: "get-all",
     description: "get all and maybe modify or delete them",
-    deleted: true,
+    deleted: false,
 
     callback: async (client, interaction) => {
 

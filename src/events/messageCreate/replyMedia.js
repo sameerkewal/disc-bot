@@ -4,6 +4,8 @@ module.exports=async(client, message)=>{
 
     if(message.author.bot) return;
 
+    console.log(message.guild.id)
+
     const gifCache =   getLocalMedia();
 
     const matchedGifObjects = gifCache.filter((gifObject) => gifObject.message.toUpperCase() === message.content.toUpperCase())

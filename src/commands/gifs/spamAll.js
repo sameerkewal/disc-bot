@@ -5,6 +5,7 @@ module.exports = {
 
     name: "spam-all",
     description: "???",
+    devsOnly: false,
 
     callback: async (client, interaction) => {
 

@@ -5,6 +5,7 @@ module.exports = {
 
     name: "register-gif",
     description: "Register Gif",
+    deleted: true,
     options: [
         {
             name: 'message',
