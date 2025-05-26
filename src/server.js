@@ -1,7 +1,7 @@
 const express = require('express');
 const server = express();
 
-const port = process.env.port || 4000;
+const port = process.env.PORT || 4000;
 console.log("binding on port ", port);
 
 server.all(`/`, (req, res) => {
