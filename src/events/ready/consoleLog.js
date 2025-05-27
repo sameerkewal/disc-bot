@@ -7,8 +7,8 @@ module.exports = (client, interaction) =>{
     client.user.setPresence({
         status: 'online',
         activities: [{
-            name: 'custom rich presence',
-            type: ActivityType.Playing ,
+            name: 'Slurs!',
+            type: ActivityType.Listening ,
             url: "http://youtube.com",
             buttons: ["BUTTON1", "BUTTON2"],
             state: '...',

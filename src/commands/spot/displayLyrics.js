@@ -47,7 +47,6 @@ module.exports = {
 
 
         const lyrics = await getLyrics(songId);
-        // console.log(lyrics);
 
         if (!lyrics) {
             await interaction.editReply({
@@ -57,13 +56,8 @@ module.exports = {
         }
 
         const joinedLyrics = lyrics.join("\n");
-        console.log(joinedLyrics.length)
-
-
         const maxLengthPerMessage = 4000;
-
         const textComponents = [];
-
 
         for (let i = 0; i < joinedLyrics.length; i += maxLengthPerMessage) {
             const chunk = joinedLyrics.substring(i, i + maxLengthPerMessage);

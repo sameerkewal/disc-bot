@@ -1,24 +1,54 @@
+const {setUserAccessTokens} = require("../../firebase/app/spotifyTokens")
 
-const state = generateRandomString(16);
+let state =[];
 
-function getAuthorizationRequestUrl(){
-    const scope = 'user-read-private user-read-email';
 
+function upsertState(userInfo){
+    const newState = generateRandomString(16);
+    const now = Date.now();
+
+    const index  = state.findIndex((state) => state.userId === userInfo.userId );
+    if(index === -1){
+        state.push({...userInfo, state: newState, timestamp: now})
+    }else{
+        state[index].state = newState;
+        state[index].timestamp = now;
+    }
+    console.log("new state: ", state)
+}
+
+function getUserInfo(requestState){
+
+
+    const stateObject =  state.find((entry) => entry.state === requestState);
+
+    return {
+        userId: stateObject.userId,
+        username: stateObject.username
+    };
+}
+
+function getAuthorizationRequestUrl(userInfo){
+    const scope = 'user-read-private user-read-email user-top-read';
+
+    upsertState(userInfo)
 
     return 'https://accounts.spotify.com/authorize?' + new URLSearchParams({
         response_type: 'code',
         client_id: process.env.SPOTIFY_CLIENT_ID,
         scope: scope,
         redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
-        state: state
+        state: state.find(entry => entry.userId === userInfo.userId).state,
     }).toString();
 }
 
 
-async function requestAccessToken(state, code) {
-    if (!state) {
+async function requestAccessToken(requestState, code) {
+    if (!requestState) {
         throw Error('Unauthorized');
     }
+
+   const userInfo =  getUserInfo(requestState, code);
 
     const clientId = process.env.SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -38,15 +68,15 @@ async function requestAccessToken(state, code) {
         body: body.toString()
     })
 
-    const data = await response.json();
+    const tokenInfo = await response.json();
 
     if(!response.ok){
         console.error('Error from Spotify:', data);
         throw new Error('Failed to get access token');
     }
-
-    console.log(data); // access_token, refresh_token, etc.
-    return data;
+    const data = {userInfo, tokenInfo}
+    await setUserAccessTokens(data)
+    return tokenInfo;
 
 }
 

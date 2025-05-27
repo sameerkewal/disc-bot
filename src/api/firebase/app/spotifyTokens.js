@@ -13,12 +13,12 @@ const config = getConfig();
 async function setLyricsTokens(objectToUpload) {
     try {
 
-        if(!validateObject(objectToUpload)) {
+        if(!validateLyricsObject(objectToUpload)) {
             throw new Error("Invalid object to upload");
         }
 
         const doc =  await firestore.collection('spotifyTokens').
-            doc('1').update({...objectToUpload, timestamp: FieldValue.serverTimestamp()});
+            doc('lyricsTokens').update({...objectToUpload, timestamp: FieldValue.serverTimestamp()});
 
         console.log("updated doc");
 
@@ -30,8 +30,7 @@ async function setLyricsTokens(objectToUpload) {
 
 async function getLyricsTokens() {
     try {
-        const doc =  await firestore.collection('spotifyTokens').doc("1").get()
-
+        const doc =  await firestore.collection('spotifyTokens').doc("lyricsTokens").get()
         if (doc.exists) {
             return doc.data();
         } else {
@@ -45,10 +44,31 @@ async function getLyricsTokens() {
 }
 
 
+async function setUserAccessTokens(objectToUpload) {
+
+    console.log('objectToUpload => ' , objectToUpload)
+
+    const docRef = await firestore.collection('spotifyTokens').doc(objectToUpload.userInfo.userId);
+    const docSnap = await docRef.get()
+
+    if(!docSnap.exists){
+        await docRef.set({
+            ...objectToUpload,
+            timestamp: FieldValue.serverTimestamp()
+        })
+    }else{
+        await docRef.update({
+            ...objectToUpload,
+            timestamp: FieldValue.serverTimestamp()
+        });
+
+    }
 
 
+}
 
-function validateObject(obj) {
+
+function validateLyricsObject(obj) {
     // Check it has only these two keys
     const keys = Object.keys(obj);
     if (keys.length !== 2 || !keys.includes('bearerToken') || !keys.includes('clientToken')) {
@@ -69,7 +89,11 @@ function validateObject(obj) {
 module.exports = {
     setLyricsTokens: setLyricsTokens,
     getLyricsTokens: getLyricsTokens,
+    setUserAccessTokens: setUserAccessTokens
 }
+
+
+
 
 
 

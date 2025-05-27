@@ -25,13 +25,11 @@ module.exports = {
 
     callback: async (client, interaction) => {
 
-        console.log(interaction.guild.id);
-        console.log(interaction.channel.id);
-
-
+       const userId = interaction.user.id
+       const username = interaction.user.username
 
         await interaction.reply({
-            content: `Click the link to authenticate with Spotify:\n${getAuthorizationRequestUrl()}`
+            content: `Click the link to authenticate with Spotify:\n${getAuthorizationRequestUrl({userId, username})}`
         });
     }
 }
