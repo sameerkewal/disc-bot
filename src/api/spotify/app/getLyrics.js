@@ -1,4 +1,4 @@
-const {uploadSpotifyTokensCache, getLocalSpotifyTokensCache} = require ("../../firebase/app/setSpotifyTokensCache.js");
+const {uploadSpotifyLyricsTokensCache, getLocalSpotifyTokensCache} = require ("../../firebase/app/setSpotifyTokensCache.js");
 
 const getSpotifyLyricTokens = require ("./getLyricTokens");
 
@@ -44,7 +44,7 @@ async function getLyrics(songId){
         const newTokens = await getSpotifyLyricTokens();
 
         // Optionally upload to Firebase cache
-        await uploadSpotifyTokensCache(newTokens);
+        await uploadSpotifyLyricsTokensCache(newTokens);
 
         response = await fetchLyrics(songId, newTokens);
 

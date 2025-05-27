@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 const config = getConfig();
 
 
-async function setTokens(objectToUpload) {
+async function setLyricsTokens(objectToUpload) {
     try {
 
         if(!validateObject(objectToUpload)) {
@@ -28,7 +28,7 @@ async function setTokens(objectToUpload) {
     }
 }
 
-async function getTokens() {
+async function getLyricsTokens() {
     try {
         const doc =  await firestore.collection('spotifyTokens').doc("1").get()
 
@@ -43,6 +43,9 @@ async function getTokens() {
         throw e;
     }
 }
+
+
+
 
 
 function validateObject(obj) {
@@ -64,8 +67,8 @@ function validateObject(obj) {
 }
 
 module.exports = {
-    setTokens,
-    getTokens,
+    setLyricsTokens: setLyricsTokens,
+    getLyricsTokens: getLyricsTokens,
 }
 
 

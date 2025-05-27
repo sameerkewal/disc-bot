@@ -1,27 +1,27 @@
-const { getTokens, setTokens } = require('./spotifyTokens');
+const { getLyricsTokens, setLyricsTokens } = require('./spotifyTokens');
 
 
-let spotifyTokens;
+let spotifyLyricsTokens;
 
-async function uploadSpotifyTokensCache(tokens){
-    await setTokens(tokens);
-    spotifyTokens = await getTokens();
+async function uploadSpotifyLyricsTokensCache(tokens){
+    await setLyricsTokens(tokens);
+    spotifyLyricsTokens = await getLyricsTokens();
 }
 
 
 async function setLocalSpotifyTokensCache(){
-    spotifyTokens = await getTokens();
+    spotifyLyricsTokens = await getLyricsTokens();
 }
 
 async function getLocalSpotifyTokensCache() {
-    if (!spotifyTokens){
+    if (!spotifyLyricsTokens){
         await setLocalSpotifyTokensCache();
     }
-    return spotifyTokens;
+    return spotifyLyricsTokens;
 }
 
 module.exports = {
-        uploadSpotifyTokensCache
+        uploadSpotifyLyricsTokensCache: uploadSpotifyLyricsTokensCache
     ,   setLocalSpotifyTokensCache
     ,   getLocalSpotifyTokensCache
 };
