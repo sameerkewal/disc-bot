@@ -16,7 +16,7 @@ server.get("/callback", (req, res) => {
     const code = req.query.code;
     const state = req.query.state;
 
-    requestAccessToken(state, code).then(()=>{
+    requestAccessToken(state, code).then(() => {
         res.send(`
       <html lang="en">
         <body>
@@ -25,17 +25,20 @@ server.get("/callback", (req, res) => {
         </body>
       </html>
     `)
-    .catch((error) => {
-            console.error("Error during auth:", error);
-            res.send(`
+            .catch((error) => {
+                console.error("Error during auth:", error);
+                res.send(`
       <html lang="en">
         <body>
           <h3>Unauthorized!</h3>
         </body>
       </html>
     `);
-        });
+            });
+    })
 })
+
+
 
 function keepAlive() {
     server.listen(port, () => {
