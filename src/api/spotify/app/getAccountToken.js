@@ -15,8 +15,6 @@ function upsertState(userInfo){
         state[index].state = newState;
         state[index].timestamp = now;
     }
-
-    console.log(state)
 }
 
 function getUserInfo(requestState, userId){
