@@ -24,10 +24,17 @@ server.get("/callback", (req, res) => {
           <p><a href="https://discord.com/channels/@me">Go to Discord</a></p>
         </body>
       </html>
+    `)
+    .catch((error) => {
+            console.error("Error during auth:", error);
+            res.send(`
+      <html lang="en">
+        <body>
+          <h3>Unauthorized!</h3>
+        </body>
+      </html>
     `);
-    });
-
-
+        });
 })
 
 function keepAlive() {
