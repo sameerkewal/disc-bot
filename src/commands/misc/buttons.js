@@ -4,7 +4,7 @@ module.exports = {
 
     name: "button",
     description: "returns a button!",
-    deleted: false,
+    deleted: true,
     testOnly: false,
     // options:
 

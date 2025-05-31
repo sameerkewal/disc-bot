@@ -1,4 +1,5 @@
-const {setUserAccessTokens} = require("../../firebase/app/spotifyTokens")
+const {uploadUserAccessTokensCache, getLocalSpotifyTokensCache} = require("../../firebase/app/setSpotifyTokensCache");
+const {getRefreshToken} = require("../../firebase/app/spotifyTokens")
 
 let state =[];
 
@@ -14,13 +15,21 @@ function upsertState(userInfo){
         state[index].state = newState;
         state[index].timestamp = now;
     }
-    console.log("new state: ", state)
+
+    console.log(state)
 }
 
-function getUserInfo(requestState){
+function getUserInfo(requestState, userId){
 
 
-    const stateObject =  state.find((entry) => entry.state === requestState);
+    const stateObject =  state.find((entry) =>{
+        if(requestState !== null){
+            return entry.state === requestState;
+        }
+        if(userId !== null){
+            return entry.userId = userId
+        }
+    }) ;
 
     return {
         userId: stateObject.userId,
@@ -48,7 +57,7 @@ async function requestAccessToken(requestState, code) {
         throw Error('Unauthorized');
     }
 
-   const userInfo =  getUserInfo(requestState, code);
+   const userInfo =  getUserInfo(requestState, null);
 
     const clientId = process.env.SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -75,9 +84,62 @@ async function requestAccessToken(requestState, code) {
         throw new Error('Failed to get access token');
     }
     const data = {userInfo, tokenInfo}
-    await setUserAccessTokens(data)
+    await uploadUserAccessTokensCache(data)
     return tokenInfo;
+}
 
+async function refreshAccessToken(userId){
+
+    const refreshToken = await getRefreshToken(userId)
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+
+    // gets retrieved locally
+    const userInfo =  (await getLocalSpotifyTokensCache("userAccessTokens")).find(token => token.userInfo.userId === userId).userInfo;
+
+
+    try {
+        const response = await fetch("https://accounts.spotify.com/api/token/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64')
+            },
+            body: new URLSearchParams({
+                grant_type: "refresh_token",
+                refresh_token: refreshToken,
+            }).toString()
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json();
+            console.error('Error from Spotify:', errorBody);
+            throw new Error('Failed to get access token');
+        }
+
+        const tokenInfo = await response.json();
+        const data = {userInfo, tokenInfo}
+        await uploadUserAccessTokensCache(data)
+
+    }catch(error){
+        console.log("error when fetching refresh token", error)
+    }
+
+}
+
+
+async function handleTokenExpiry(response, userId){
+    if(response.status === 401){
+        const authHeader = response.headers.get("www-authenticate");
+
+        if(authHeader && authHeader.includes(`error="invalid_token"`) && authHeader.includes('error_description="The access token expired"')){
+            console.log("token expired, retrying!")
+            await refreshAccessToken(userId)
+            return true;
+        }
+    }
+    return false;
 }
 
 function generateRandomString(length) {
@@ -90,4 +152,6 @@ function generateRandomString(length) {
     return text;
 }
 
-module.exports = {getAuthorizationRequestUrl, requestAccessToken};
+module.exports = {handleTokenExpiry, getAuthorizationRequestUrl, requestAccessToken, refreshAccessToken};
+
+

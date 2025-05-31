@@ -4,7 +4,6 @@ const {requestAccessToken} = require("./api/spotify/app/getAccountToken.js")
 
 
 const port = process.env.PORT || 4000;
-console.log("binding on port ", port);
 
 server.all(`/`, (req, res) => {
     res.send(`Result: [OK].`);
@@ -33,7 +32,6 @@ server.get("/callback", (req, res) => {
 
 function keepAlive() {
     server.listen(port, () => {
-        console.log(`Server is now ready! | ` + Date.now());
     });
 }
 

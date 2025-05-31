@@ -20,7 +20,7 @@ module.exports = {
 
     name: "register-user",
     description: "register-user",
-    deleted: false,
+    deleted: true,
     testOnly: false,
 
     callback: async (client, interaction) => {

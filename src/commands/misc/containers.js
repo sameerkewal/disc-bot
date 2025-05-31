@@ -22,8 +22,8 @@ const {
 
 module.exports = {
 
-    name: "pong",
-    description: "ping!",
+    name: "containers",
+    description: "container!",
     deleted: true,
     // devOnly: true,
     // testOnly: true

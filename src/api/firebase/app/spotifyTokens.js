@@ -1,4 +1,5 @@
 const { firestore } = require('./initFb');
+const {FieldPath} = require('@google-cloud/firestore');
 const getConfig = require('../utils/buildConfig');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -46,24 +47,72 @@ async function getLyricsTokens() {
 
 async function setUserAccessTokens(objectToUpload) {
 
-    console.log('objectToUpload => ' , objectToUpload)
 
     const docRef = await firestore.collection('spotifyTokens').doc(objectToUpload.userInfo.userId);
     const docSnap = await docRef.get()
 
     if(!docSnap.exists){
+
         await docRef.set({
             ...objectToUpload,
             timestamp: FieldValue.serverTimestamp()
         })
     }else{
+        // prevent overwriting refresh tokens if no new one
+        // This is because new refresh tokens aren't always provided when refreshing token
+        // and in that case old refresh token should be used
+        const existingRefreshToken = docSnap.data()?.tokenInfo.refresh_token;
+
+        if(!objectToUpload.tokenInfo?.refresh_token && existingRefreshToken){
+            objectToUpload.tokenInfo = {
+                ...objectToUpload.tokenInfo
+            ,   refresh_token: existingRefreshToken
+            }
+        }
         await docRef.update({
             ...objectToUpload,
             timestamp: FieldValue.serverTimestamp()
         });
 
     }
+}
 
+async function getAllUserAccessTokens() {
+    try {
+        const userAccessTokens = [];
+
+        const tokensRef =  await firestore.collection('spotifyTokens');
+        const tokensSnapshot = await tokensRef.where("__name__", "!=", "lyricsTokens")
+            .get();
+
+        tokensSnapshot.forEach(doc => {
+            const data  = doc.data();
+            userAccessTokens.push({
+                userInfo: data.userInfo,
+                tokenInfo: {
+                    access_token: data.tokenInfo.access_token,
+                    token_type: data.tokenInfo.token_type
+                }
+            });
+        });
+
+        return userAccessTokens
+
+    } catch (e) {
+        console.log('Error getting tokens', e);
+        throw e;
+    }
+}
+
+
+async function getRefreshToken(userId){
+
+        const doc = await firestore.collection('spotifyTokens').doc(userId).get()
+        if (doc.exists) {
+            return doc.data().tokenInfo.refresh_token;
+        } else {
+            throw Error(`No tokens found for user ${userId}`);
+        }
 
 }
 
@@ -89,7 +138,9 @@ function validateLyricsObject(obj) {
 module.exports = {
     setLyricsTokens: setLyricsTokens,
     getLyricsTokens: getLyricsTokens,
-    setUserAccessTokens: setUserAccessTokens
+    setUserAccessTokens: setUserAccessTokens,
+    getAllUserAccessTokens : getAllUserAccessTokens,
+    getRefreshToken : getRefreshToken
 }
 
 

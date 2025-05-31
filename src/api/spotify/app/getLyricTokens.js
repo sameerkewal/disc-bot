@@ -9,7 +9,7 @@ const SPOTIFY_PASSWORD = process.env.SPOTIFY_PW;
 
 async function getSpotifyLyricTokens() {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         slowMo: 75,
         defaultViewport: null
     });
@@ -32,11 +32,12 @@ async function getSpotifyLyricTokens() {
         request.continue();
     });
 
-    await page.goto('https://accounts.spotify.com/en/login', {
+    await page.goto(`https://accounts.spotify.com/en/login?login_hint=${encodeURIComponent(SPOTIFY_EMAIL)}&allow_password=1`, {
         waitUntil: 'networkidle2'
     });
 
-    await page.type('#login-username', SPOTIFY_EMAIL, { delay: 50 });
+    // username already typed due to link!
+    // await page.type('#login-username', SPOTIFY_EMAIL, { delay: 50 });
     await page.type('#login-password', SPOTIFY_PASSWORD, { delay: 50 });
 
     await Promise.all([

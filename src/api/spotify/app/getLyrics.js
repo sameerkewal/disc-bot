@@ -28,7 +28,7 @@ async function getLyrics(songId){
 
     const lyrics = []
 
-    const localSpotifyTokens = await getLocalSpotifyTokensCache();
+    const localSpotifyTokens = await getLocalSpotifyTokensCache("lyrics");
     let response = await fetchLyrics(songId, localSpotifyTokens);
 
     if (response.ok) {
