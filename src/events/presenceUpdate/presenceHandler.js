@@ -111,7 +111,7 @@ const presenceHandler = async (oldPresence, newPresence) => {
       const logChannelToSend = await  guild.channels.fetch(logChannel);
 
         await logChannelToSend.send(
-            `Timestamp: ${new Date(registerPresenceResults.timeStamp).toLocaleTimeString('en-US', { hour12: false })}: ${registerPresenceResults.reason}`
+            `Timestamp: ${new Date(registerPresenceResults.timeStamp).toLocaleTimeString('en-US', { hour12: false , timeZone: 'America/Paramaribo' })}: ${registerPresenceResults.reason}`
         );    }
 };
 
