@@ -5,4 +5,11 @@ class SpotifyTokenNotConfiguredError extends Error {
     }
 }
 
-module.exports = {SpotifyTokenNotConfiguredError};
+class SpotifyPermissionsMissing extends Error {
+    constructor(message = "Permissions missing, please authorize user again") {
+        super(message);
+        this.name = "SpotifyTokenNotConfiguredError";
+    }
+}
+
+module.exports = {SpotifyTokenNotConfiguredError, SpotifyPermissionsMissing};

@@ -2,37 +2,18 @@ const {getLocalSpotifyTokensCache} = require ("../../firebase/app/setSpotifyToke
 const {SpotifyTokenNotConfiguredError } = require ("../../../errors/errors");
 const {refreshAccessToken} = require("../app/getAccountToken.js")
 const {handleTokenExpiry} = require("./getAccountToken");
-const {use} = require("express/lib/application");
 const {devs} = require('../../../../config.json')
 
+const getLocalSpotifyUserAccessTokens = require("../utils/getLocalSpotifyUserAccessTokens.js")
 
 
 async function searchSong(userId, params) {
 
     try {
-
-        // get access_token locally
-        const getLocalSpotifyUserAccessTokens = async (userId) => {
-            const allTokens = await getLocalSpotifyTokensCache("userAccessTokens");
-
-            let match = allTokens.find(
-                tokenInfo => userId === tokenInfo.userInfo.userId
-            )
-
-            if(!match && devs?.[0]){
-                match = allTokens.find(
-                    tokenInfo => devs[0] === tokenInfo.userInfo.userId
-                )
-            }
-
-            return match?.tokenInfo?.access_token || null
-        }
-
         // if user not configured and no dev id configured just throw error
-        if (!(await getLocalSpotifyUserAccessTokens(userId))) {
+        if (!(await getLocalSpotifyUserAccessTokens(userId, true))) {
             throw new SpotifyTokenNotConfiguredError();
         }
-
 
 
         const url = "https://api.spotify.com/v1/search?" + new URLSearchParams({
@@ -49,13 +30,13 @@ async function searchSong(userId, params) {
                 }
             });
         };
-        let response = await fetchSearch(await getLocalSpotifyUserAccessTokens(userId));
+        let response = await fetchSearch(await getLocalSpotifyUserAccessTokens(userId, true));
 
 
         //returns boolean but also puts new tokens in local cache IF expired
         const expired = await handleTokenExpiry(response, userId)
         //retry
-        if (expired) response = await fetchSearch(await getLocalSpotifyUserAccessTokens(userId));
+        if (expired) response = await fetchSearch(await getLocalSpotifyUserAccessTokens(userId, true));
 
         const data = await response.json()
         const items = data[params.jsonReturnKey].items;
