@@ -1,5 +1,5 @@
-const { setLocalGifs } = require('../../api/firebase/app/setMediaCache');
-const { setLocalSpotifyTokensCache } = require('../../api/firebase/app/setSpotifyTokensCache');
+const { setLocalGifs } = require('../../../api/firebase/app/setMediaCache');
+const { setLocalSpotifyTokensCache } = require('../../../api/firebase/app/setSpotifyTokensCache');
 
 
 module.exports = async (client, interaction) =>{

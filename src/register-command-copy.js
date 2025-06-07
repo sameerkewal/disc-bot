@@ -8,8 +8,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const commands = [
     {
-        name: "spam-all",
-        description: "???",
+        name: "clear-console",
+        description: "clears console. for devs only!",
     }
 ];
 
@@ -22,7 +22,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
         await rest.put(
             Routes.applicationGuildCommands(
                 process.env.CLIENT_ID,
-               "877949843740426301"
+               "1102350189982920736"
             ),
             { body: commands }
         );

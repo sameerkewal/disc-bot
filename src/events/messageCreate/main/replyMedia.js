@@ -1,7 +1,6 @@
-const { getLocalMedia } = require('../../api/firebase/app/setMediaCache');
+const { getLocalMedia } = require('../../../api/firebase/app/setMediaCache');
 
 module.exports=async(client, message)=>{
-
     if(message.author.bot) return;
 
     const gifCache =   getLocalMedia();

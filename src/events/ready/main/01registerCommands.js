@@ -1,7 +1,8 @@
-const { testServer } = require ('../../../config.json')
-const getLocalCommands = require('../../utils/getLocalCommands')
-const getApplicationCommands = require('../../utils/getApplicationCommands')
-const areCommandsDifferent = require('../../utils/areCommandsDifferent')
+const { testServer } = require ('../../../../config.json')
+const getLocalCommands = require('../../../utils/getLocalCommands')
+const getApplicationCommands = require('../../../utils/getApplicationCommands')
+const areCommandsDifferent = require('../../../utils/areCommandsDifferent')
+const {debugRegisterCommands} = require('../../../../config.json')
 
 module.exports = async (client) => {
 
@@ -18,7 +19,7 @@ module.exports = async (client) => {
       if (existingCommand) {
         if (localCommand.deleted) {
           await applicationCommands.delete(existingCommand.id);
-          console.log(`deleted ${name}`)
+          debugRegisterCommands && console.log(`deleted ${name}`)
           continue;
         }
         if (areCommandsDifferent(existingCommand, localCommand)) {
@@ -26,11 +27,11 @@ module.exports = async (client) => {
             description,
             options
           });
-          console.log('updated command ', name)
+          debugRegisterCommands && console.log('updated command ', name)
         }
       } else {
         if (localCommand.deleted) {
-          console.log(`skipping registering command ${name} as it is deleted`)
+          debugRegisterCommands && console.log(`skipping registering command ${name} as it is deleted`)
           continue;
         }
         await applicationCommands.create({
@@ -38,7 +39,7 @@ module.exports = async (client) => {
           description,
           options
         })
-        console.log(`registered command ${name}`)
+        debugRegisterCommands && console.log(`registered command ${name}`)
       }
       }
 

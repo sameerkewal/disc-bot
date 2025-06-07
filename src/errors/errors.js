@@ -12,4 +12,13 @@ class SpotifyPermissionsMissing extends Error {
     }
 }
 
-module.exports = {SpotifyTokenNotConfiguredError, SpotifyPermissionsMissing};
+class MissingMainHandlerFolderError extends Error {
+    constructor(folderPath) {
+        super(`Expected a 'main' folder in handler path: ${folderPath}`);
+        this.name = "MissingMainHandlerFolderError";
+    }
+}
+
+
+
+module.exports = {SpotifyTokenNotConfiguredError, SpotifyPermissionsMissing, MissingMainHandlerFolderError};

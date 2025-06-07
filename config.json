@@ -2,9 +2,33 @@
   "testServer": "1102350189982920736",
   "logServer": "1102350189982920736",
   "logChannel": "1378792700429471996",
-  "mainServer" : "877949843740426301",
+  "mainServer" : "1102350189982920736",
+  "debugRegisterCommands": false,
   "devs": [
     "165464938012344320"
   ],
-  "mainMembers": ["165464938012344320", "719789464100274216", "729172333910163517"]
+  "mainMembers": [
+    {
+      "userId": "165464938012344320",
+      "notifications": "status"
+    }
+    ,
+    {
+      "userId": "711043367341129730",
+      "notifications": "status"
+    },
+    {
+      "userId": "",
+      "notifications": "status"
+    }
+  ],
+  "environmentVariables": {
+    "DEV": {
+      "activityName": "Nothing Apparently(but locally)"
+    },
+    "PROD": {
+      "activityName": "Nothing Apparently"
+    }
+  }
+
 }

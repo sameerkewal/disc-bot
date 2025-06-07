@@ -2,8 +2,6 @@ const {Client, IntentsBitField} = require ('discord.js')
 const dotenv = require('dotenv');
 const path = require('path');
 const eventHandler = require('./handlers/eventHandler');
-
-const customRegisterCommand = require('./register-command');
 const keepAlive = require("./server");
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });

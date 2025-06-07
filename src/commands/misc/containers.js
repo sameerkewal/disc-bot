@@ -24,7 +24,7 @@ module.exports = {
 
     name: "containers",
     description: "container!",
-    deleted: true,
+    deleted: false,
     // devOnly: true,
     // testOnly: true
     // options:
@@ -37,11 +37,7 @@ module.exports = {
 
         const filePath = path.join(__dirname, '..', '..', 'assets', 'example.txt');
 
-        console.log(filePath);
-
         const fileContent = await fs.readFile(filePath, 'utf-8');
-
-        console.log(fileContent);
 
         const attachment = new AttachmentBuilder(Buffer.from(fileContent), {
             name: 'sample.txt'
