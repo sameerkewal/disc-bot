@@ -26,7 +26,7 @@
     "DEV": {
       "activityName": "Nothing Apparently(but locally)"
     },
-    "PROD": {
+    "PRD": {
       "activityName": "Nothing Apparently"
     }
   },
