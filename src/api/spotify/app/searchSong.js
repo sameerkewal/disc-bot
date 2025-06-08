@@ -1,5 +1,5 @@
 const {getLocalSpotifyTokensCache} = require ("../../firebase/app/setSpotifyTokensCache.js");
-const {SpotifyTokenNotConfiguredError } = require ("../../../errors/errors");
+const {SpotifyTokenNotConfiguredError, SpotifyPermissionsMissing} = require ("../../../errors/errors");
 const {refreshAccessToken} = require("../app/getAccountToken.js")
 const {handleTokenExpiry} = require("./getAccountToken");
 const {devs} = require('../../../../config.json')
@@ -39,6 +39,11 @@ async function searchSong(userId, params) {
         if (expired) response = await fetchSearch(await getLocalSpotifyUserAccessTokens(userId, true));
 
         const data = await response.json()
+
+        if(data?.error?.status === 401 && data?.error?.message === 'Permissions missing') {
+            throw new SpotifyPermissionsMissing();
+        }
+
         const items = data[params.jsonReturnKey].items;
 
         let parsedSearchResult =   handleTracks(items)

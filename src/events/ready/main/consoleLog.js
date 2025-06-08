@@ -1,4 +1,4 @@
-const {setPresence} = require("../../presenceUpdate//helpers/presenceUtils");
+const {setPresence} = require("../../presenceUpdate//helpers/presenceService");
 const {logServer, logChannel} = require("../../../../config.json")
 const {clearChannel} = require("../../../api/discord/clearLogChannel")
 
@@ -15,4 +15,5 @@ module.exports = async (client, interaction) => {
 
     await setPresence(client)
     // await clearChannel({logServer, logChannel, client})
+
 }

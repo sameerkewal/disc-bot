@@ -1,9 +1,9 @@
-const {environmentVariables} = require("../../../../config.json")
+const {setSpotifyPresence} = require("./presenceService")
+const {startCheckingOfflineSpotifyActivity, stopCheckingOfflineSpotifyActivity} = require("./offlineSpotifyPoller");
+
 
 //constants
-const {ActivityType} = require("discord.js");
 const activityMap = new Map(); // userId -> presence object
-
 
 const spotifyPresenceState = {
     presence: null,
@@ -14,6 +14,8 @@ const spotifyPresenceState = {
 function getActivity(){
     return activityMap;
 }
+
+const isBotStartup = true;
 
 
 /**
@@ -61,7 +63,7 @@ async function registerPresence({
     const userActivity = activityMap.get(userId);
 
     // Variable which we will return
-    // Doing it like this as we don't want to short circuit for setting bot presence
+    // Doing it like this as we don't want to short circuit so we can set bot presence
     let returnValue = null;
 
 
@@ -81,26 +83,26 @@ async function registerPresence({
         };
     }
 
-    // console.log(`userActivity.newSpotifyActivity for user ${username}`, userActivity?.newSpotifyActivity)
     //
     const statusUnchanged = userActivity == null || userActivity.newStatus === newStatus;
     //
     const spotifyUnchanged = (JSON.stringify(userActivity?.newSpotifyActivity ?? {} ) === JSON.stringify(newSpotifyActivity ?? {} ));
 
 
-    // console.log(`spotifyUnchanged for user ${username}` , spotifyUnchanged)
-    // console.log(`statusUnchanged for user ${username}` , statusUnchanged)
 
     const isIncomingActive = Object.keys(newSpotifyActivity).length > 0;
-    //
-    //
+
     // Set spotify presence
     // 1. Presence for bot hasn't been set yet or user to whom's the bot presence was set, changed song
     // 2. User to whom's the bot presence was set stopped playing music, so attempting to find a fallback user for setting the bot's presence
     if (!spotifyUnchanged) {
         if (isIncomingActive && (!spotifyPresenceState.presence || spotifyPresenceState.userId === userId)) {
 
+
             const wasPreviouslyInactive = !spotifyPresenceState.presence;
+
+            // switch offline mode off
+            if (wasPreviouslyInactive) stopCheckingOfflineSpotifyActivity();
 
 
             if(!spotifyPresenceState.presence || spotifyPresenceState.presence.details !== newSpotifyActivity.details) {
@@ -123,16 +125,16 @@ async function registerPresence({
                 spotifyPresenceState.userId = fallback.userId;
                 console.log(`[Discord Bot Presence] Fallback presence set to user ${fallback.username}`);
             } else {
-                await setSpotifyPresence(client, null);
+                // await setSpotifyPresence(client, null); --> off due to checkSpotifyActivityOffline()
                 spotifyPresenceState.presence = null;
                 spotifyPresenceState.userId = null;
                 console.log("[Discord Bot Presence] Cleared presence - no one playing music");
-
-
-
+                await startCheckingOfflineSpotifyActivity(userId, client)
             }
         }
     }
+
+
 
     // prevents presenceUpdate from firing twice
     if (statusUnchanged && spotifyUnchanged && userActivity) {
@@ -188,55 +190,12 @@ async function registerPresence({
         }
 
     }
-    console.log("returning", returnValue)
     return returnValue;
 }
 
 
-async function setPresence(client, activities) {
-    const defaultPresence = [
-        {
-            name: "default",
-            status: 'online',
-            activities: [{
-                name: environmentVariables[process.env.ENVIRONMENT].activityName,
-                type: ActivityType.Listening,
-            }]
-        }
-    ]
-    if(!activities){
-        const presenceObject = defaultPresence.find((presence) => presence.name === "default");
 
-        client.user.setPresence({
-            status: presenceObject.name,
-            activities: presenceObject.activities,
-        });
-        return;
-    }
-    client.user.setPresence({
-        status: activities.status,
-        activities: activities.activities,
-    });
-}
 
-async function setSpotifyPresence(client, newSpotifyActivity) {
-
-    //set default presence and then return
-    if(!newSpotifyActivity ||  Object.keys(newSpotifyActivity).length === 0) {
-        await setPresence(client)
-        return;
-    }
-
-    client.user.setPresence({
-        status: "online",
-        activities: [
-            {
-                name: `${newSpotifyActivity.details} - ${newSpotifyActivity?.artists?.replace(/;/g, ', ')}`  ,
-                type: ActivityType.Listening,
-            }
-        ],
-    });
-}
 
 function findAnotherActiveSpotifyUser(excludeUserId){
     for(const [userId, activity] of getActivity().entries()){
@@ -262,7 +221,6 @@ function getSpotifyActivity(activities){
 
     const spotifyActivity = activities.find((activity => activity.name.toLowerCase() === "spotify"))
 
-
     if(spotifyActivity){
         return  {
             name        : spotifyActivity.name,
@@ -278,4 +236,4 @@ function getSpotifyActivity(activities){
 }
 
 
-module.exports = {getActivity, registerPresence, setPresence, getSpotifyActivity}
+module.exports = {getActivity, registerPresence, getSpotifyActivity, findAnotherActiveSpotifyUser}

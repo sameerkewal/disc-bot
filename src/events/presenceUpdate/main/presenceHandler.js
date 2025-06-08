@@ -7,9 +7,6 @@ const path = require("path");
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 
-
-
-
 //main function
 module.exports = async (oldPresence, newPresence) => {
     if (newPresence?.guild?.id !== mainServer || newPresence?.member?.user.bot) return;
@@ -39,16 +36,4 @@ module.exports = async (oldPresence, newPresence) => {
         }
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
 

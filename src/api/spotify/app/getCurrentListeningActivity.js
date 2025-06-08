@@ -31,22 +31,16 @@ async function getCurrentListeningActivity(userId){
         //retry
         if (expired) response = await fetchSearch(await getLocalSpotifyUserAccessTokens(userId, false));
 
-        const data = await response.json()
+        // user not listening to anything right now
+        if(response.status === 204 && response.statusText === 'No Content'){
+            return null
+        }
 
+        const data = await response.json()
 
         if(data?.error?.status === 401 && data?.error?.message === 'Permissions missing') {
             throw new SpotifyPermissionsMissing();
         }
-
-        console.log(        {
-            progressMs  : data.progress_ms,
-            totalMs     : data.item.duration_ms,
-            songId      : data.item.id,
-            songUrl     : data.item.external_urls.spotify,
-            trackName   : data.item.name,
-            albumName   : data.item.album.name,
-            artistName  : data.item.artists.map(artist => artist.name).join(", "),
-        })
 
         return {
             progressMs  : data.progress_ms,
@@ -56,6 +50,7 @@ async function getCurrentListeningActivity(userId){
             trackName   : data.item.name,
             albumName   : data.item.album.name,
             artistName  : data.item.artists.map(artist => artist.name).join(", "),
+            isPlaying   : data.is_playing
         }
 
     }catch (e) {
@@ -64,4 +59,5 @@ async function getCurrentListeningActivity(userId){
     }
 }
 
-getCurrentListeningActivity("165464938012344320").then(r => null)
+module.exports = {getCurrentListeningActivity};
+

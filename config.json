@@ -2,7 +2,7 @@
   "testServer": "1102350189982920736",
   "logServer": "1102350189982920736",
   "logChannel": "1378792700429471996",
-  "mainServer" : "1102350189982920736",
+  "mainServer" : "877949843740426301",
   "debugRegisterCommands": false,
   "devs": [
     "165464938012344320"
@@ -14,11 +14,11 @@
     }
     ,
     {
-      "userId": "711043367341129730",
+      "userId": "729172333910163517",
       "notifications": "status"
     },
     {
-      "userId": "",
+      "userId": "719789464100274216",
       "notifications": "status"
     }
   ],
@@ -29,6 +29,6 @@
     "PROD": {
       "activityName": "Nothing Apparently"
     }
-  }
-
+  },
+  "defaultIntervalActivityCheck" : 300000
 }
